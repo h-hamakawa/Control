@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}ホーム - Control{% endblock %}
+{% block header_title %}Control{% endblock %}
+
+{% block header_right %}
+<a href="{% url 'detail' %}" class="detail-btn" style="width:auto;padding:6px 12px;font-size:13px;">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+  </svg>
+  詳細
+</a>
+{% endblock %}
+
+{% block content %}
+{% if summary %}
+
+<div class="card" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border: none;">
+  <div class="card-title" style="color: rgba(255,255,255,0.7);">所持金</div>
+  <div class="amount-display">
+    <span class="possession-value" style="color: white;">¥{{ summary.possession|floatformat:0 }}</span>
+    {% if summary.days_until_next_salary is not None %}
+    <span class="days-badge" style="background:rgba(255,255,255,0.2);color:white;">あと{{ summary.days_until_next_salary }}日</span>
+    {% endif %}
+  </div>
+  {% if summary.next_salary_date %}
+  <p style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:6px;">次の給料日: {{ summary.next_salary_date|date:"M月d日" }}</p>
+  {% endif %}
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">負債</div>
+    <div class="amount-value negative" style="font-size:22px;">¥{{ summary.current_debt_total|floatformat:0 }}</div>
+    {% if summary.credit_debt_total > 0 %}
+    <p class="text-xs text-muted mt-4">うちクレジット ¥{{ summary.credit_debt_total|floatformat:0 }}</p>
+    {% endif %}
+  </div>
+  <div class="card">
+    <div class="card-title">予定所持金</div>
+    <div class="amount-value positive" style="font-size:22px;">¥{{ summary.scheduled_income|floatformat:0 }}</div>
+  </div>
+</div>
+
+<div class="card" style="{% if summary.usable < 0 %}border-color: var(--danger); background: var(--danger-light);{% elif summary.usable <= 30000 %}border-color: var(--warning); background: var(--warning-light);{% endif %}">
+  <div class="card-title">使可金</div>
+  <div class="amount-display">
+    <span class="amount-value {% if summary.usable < 0 %}negative{% elif summary.usable <= 30000 %}warning{% endif %}" style="font-size:26px;">
+      ¥{{ summary.usable|floatformat:0 }}
+    </span>
+    {% if summary.days_until_next_salary is not None %}
+    <span class="days-badge">あと{{ summary.days_until_next_salary }}日</span>
+    {% endif %}
+  </div>
+  <p class="text-xs text-muted mt-4">所持金 − クレジット負債 − 負債</p>
+</div>
+
+<div class="card" style="{% if summary.planned_usable < 0 %}border-color: var(--danger); background: var(--danger-light);{% elif summary.planned_usable <= 30000 %}border-color: var(--warning); background: var(--warning-light);{% endif %}">
+  <div class="card-title">予定使可金</div>
+  <div class="amount-display">
+    <span class="amount-value {% if summary.planned_usable < 0 %}negative{% elif summary.planned_usable <= 30000 %}warning{% endif %}" style="font-size:26px;">
+      ¥{{ summary.planned_usable|floatformat:0 }}
+    </span>
+    {% if summary.days_until_next_next_salary is not None %}
+    <span class="days-badge">あと{{ summary.days_until_next_next_salary }}日</span>
+    {% endif %}
+  </div>
+  <p class="text-xs text-muted mt-4">使可金 + 予定所持金 − 予定負債</p>
+</div>
+
+{% if summary.card_debts %}
+<p class="section-title">クレジット負債内訳</p>
+<div class="card">
+  {% for item in summary.card_debts %}
+  <div class="summary-row">
+    <span class="summary-label">{{ item.name }}</span>
+    <span class="summary-value text-danger">¥{{ item.amount|floatformat:0 }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if summary.current_debts %}
+<p class="section-title">負債一覧</p>
+<div class="card">
+  {% for debt in summary.current_debts %}
+  <div class="debt-item">
+    <span class="debt-description">{{ debt.description }}</span>
+    <span class="debt-amount">¥{{ debt.amount|floatformat:0 }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if summary.next_debts %}
+<p class="section-title">予定負債一覧</p>
+<div class="card">
+  {% for debt in summary.next_debts %}
+  <div class="debt-item">
+    <span class="debt-description">{{ debt.description }}</span>
+    <span class="debt-amount">¥{{ debt.amount|floatformat:0 }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+  </svg>
+  <p>設定から給料日を設定してください</p>
+</div>
+{% endif %}
+{% endblock %}
