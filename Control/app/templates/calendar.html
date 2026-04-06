@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}カレンダー - Control{% endblock %}
+{% block header_title %}カレンダー{% endblock %}
+
+{% block content %}
+<div class="calendar-nav">
+  <button id="prev-month">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <span class="calendar-nav-title" id="month-title"></span>
+  <button id="next-month">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7 7-7" transform="rotate(180 12 12)"/></svg>
+  </button>
+</div>
+
+<table class="calendar-grid">
+  <thead>
+    <tr>
+      <th style="color:var(--danger);">日</th>
+      <th>月</th><th>火</th><th>水</th><th>木</th><th>金</th>
+      <th style="color:var(--primary);">土</th>
+    </tr>
+  </thead>
+  <tbody id="calendar-body"></tbody>
+</table>
+
+<div class="event-list" id="selected-events" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <p class="section-title" style="margin:0;" id="selected-date-title"></p>
+    <a href="#" id="add-event-link" class="btn btn-primary btn-sm" style="width:auto;">+ 追加</a>
+  </div>
+  <div id="events-container"></div>
+</div>
+
+<a href="{% url 'add_event' %}" class="fab" id="fab-add">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+</a>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const CSRF = '{{ csrf_token }}';
+let currentYear = new Date().getFullYear();
+let currentMonth = new Date().getMonth() + 1;
+let allEvents = {};
+let selectedDate = null;
+
+const TYPE_LABELS = { general: '一般', salary: '給料日', payment: '支払い', income: '収入' };
+const TYPE_COLORS = { general: 'var(--gray-400)', salary: 'var(--success)', payment: 'var(--danger)', income: 'var(--primary)' };
+
+function formatMonth(y, m) {
+  return `${y}年${m}月`;
+}
+
+async function loadEvents(year, month) {
+  const res = await fetch(`/calendar/events/?year=${year}&month=${month}`);
+  const data = await res.json();
+  allEvents = {};
+  data.events.forEach(e => {
+    if (!allEvents[e.date]) allEvents[e.date] = [];
+    allEvents[e.date].push(e);
+  });
+  renderCalendar(year, month);
+}
+
+function renderCalendar(year, month) {
+  document.getElementById('month-title').textContent = formatMonth(year, month);
+  const today = new Date();
+  const firstDay = new Date(year, month - 1, 1).getDay();
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const tbody = document.getElementById('calendar-body');
+  tbody.innerHTML = '';
+  let day = 1;
+  for (let row = 0; row < 6; row++) {
+    if (day > daysInMonth) break;
+    const tr = document.createElement('tr');
+    for (let col = 0; col < 7; col++) {
+      const td = document.createElement('td');
+      if (row === 0 && col < firstDay || day > daysInMonth) {
+        tr.appendChild(td);
+        continue;
+      }
+      const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const isToday = today.getFullYear() === year && today.getMonth()+1 === month && today.getDate() === day;
+      const cls = ['calendar-day', isToday ? 'today' : '', col === 0 ? 'sunday' : '', col === 6 ? 'saturday' : ''].filter(Boolean).join(' ');
+      td.innerHTML = `
+        <div class="${cls}" data-date="${dateStr}">
+          <div class="calendar-day-num">${day}</div>
+          <div class="calendar-dots">
+            ${(allEvents[dateStr] || []).map(e => `<div class="calendar-dot ${e.event_type}"></div>`).join('')}
+          </div>
+        </div>`;
+      td.querySelector('.calendar-day').addEventListener('click', () => selectDate(dateStr, day));
+      tr.appendChild(td);
+      day++;
+    }
+    tbody.appendChild(tr);
+  }
+}
+
+function selectDate(dateStr, day) {
+  selectedDate = dateStr;
+  const panel = document.getElementById('selected-events');
+  const container = document.getElementById('events-container');
+  const title = document.getElementById('selected-date-title');
+  const addLink = document.getElementById('add-event-link');
+  const [y, m, d] = dateStr.split('-');
+  title.textContent = `${parseInt(m)}月${parseInt(d)}日`;
+  addLink.href = `/calendar/add/?date=${dateStr}`;
+  const events = allEvents[dateStr] || [];
+  if (events.length === 0) {
+    container.innerHTML = '<p class="text-sm text-muted">予定はありません</p>';
+  } else {
+    container.innerHTML = events.map(e => `
+      <div class="event-item">
+        <div>
+          <span class="event-type-badge ${e.event_type}">${TYPE_LABELS[e.event_type]}</span>
+          <p style="font-size:14px;font-weight:600;margin-top:4px;">${e.title}</p>
+          ${e.amount ? `<p class="text-sm text-muted">¥${e.amount.toLocaleString()}</p>` : ''}
+          ${e.is_processed ? '<p class="text-xs" style="color:var(--success);">✓ 処理済み</p>' : ''}
+        </div>
+        <form method="post" action="/calendar/delete/${e.id}/">
+          <input type="hidden" name="csrfmiddlewaretoken" value="${CSRF}">
+          <button type="submit" style="background:none;border:none;color:var(--gray-400);font-size:20px;cursor:pointer;">×</button>
+        </form>
+      </div>`).join('');
+  }
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.getElementById('prev-month').addEventListener('click', () => {
+  if (currentMonth === 1) { currentMonth = 12; currentYear--; }
+  else currentMonth--;
+  loadEvents(currentYear, currentMonth);
+});
+document.getElementById('next-month').addEventListener('click', () => {
+  if (currentMonth === 12) { currentMonth = 1; currentYear++; }
+  else currentMonth++;
+  loadEvents(currentYear, currentMonth);
+});
+
+loadEvents(currentYear, currentMonth);
+</script>
+{% endblock %}
