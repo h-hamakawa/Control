@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}カテゴリ管理 - Control{% endblock %}
+{% block header %}
+<div class="app-header">
+  <a href="{% url 'settings' %}" class="header-back">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    カテゴリ管理
+  </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<p class="section-title">収益カテゴリ</p>
+<div class="card" style="padding:0 16px;">
+  {% for cat in income_categories %}
+  <div class="debt-item">
+    <span style="font-size:15px;">{{ cat.name }}</span>
+    <div style="display:flex;gap:8px;">
+      <a href="{% url 'edit_category' cat.id %}" class="btn btn-ghost btn-sm">編集</a>
+      <form method="post" action="{% url 'delete_category' cat.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--danger);">削除</button>
+      </form>
+    </div>
+  </div>
+  {% empty %}
+  <p class="text-sm text-muted" style="padding:12px 0;">カテゴリがありません</p>
+  {% endfor %}
+</div>
+
+<p class="section-title">費用カテゴリ</p>
+<div class="card" style="padding:0 16px;">
+  {% for cat in expense_categories %}
+  <div class="debt-item">
+    <span style="font-size:15px;">{{ cat.name }}</span>
+    <div style="display:flex;gap:8px;">
+      <a href="{% url 'edit_category' cat.id %}" class="btn btn-ghost btn-sm">編集</a>
+      <form method="post" action="{% url 'delete_category' cat.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--danger);">削除</button>
+      </form>
+    </div>
+  </div>
+  {% empty %}
+  <p class="text-sm text-muted" style="padding:12px 0;">カテゴリがありません</p>
+  {% endfor %}
+</div>
+
+<a href="{% url 'add_category' %}" class="btn btn-primary" style="margin-top:16px;">+ カテゴリを追加</a>
+{% endblock %}
