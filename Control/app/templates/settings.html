@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}設定 - Control{% endblock %}
+{% block header_title %}設定{% endblock %}
+
+{% block content %}
+<p class="text-sm text-muted mb-8">{{ request.user.name }} ({{ request.user.email }})</p>
+
+<div class="card" style="padding:0;">
+  <ul class="menu-list" style="padding:0 16px;">
+    <li>
+      <a href="{% url 'salary_day_settings' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--success-light);">
+            <svg fill="none" stroke="#059669" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          給料日の設定
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'credit_card_settings' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--primary-light);">
+            <svg fill="none" stroke="#4f46e5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          </div>
+          クレジット管理
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'category_settings' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--warning-light);">
+            <svg fill="none" stroke="#d97706" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+          </div>
+          カテゴリ管理
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'password_change' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--gray-100);">
+            <svg fill="none" stroke="var(--gray-600)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          パスワード変更
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<a href="{% url 'logout' %}" class="btn btn-ghost" style="margin-top:16px;color:var(--danger);">ログアウト</a>
+{% endblock %}
