@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}クレジット管理 - Control{% endblock %}
+{% block header %}
+<div class="app-header">
+  <a href="{% url 'settings' %}" class="header-back">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    クレジット管理
+  </a>
+</div>
+{% endblock %}
+
+{% block content %}
+{% if cards %}
+<div class="card" style="padding:0 16px;">
+  {% for card in cards %}
+  <div class="debt-item">
+    <div>
+      <p style="font-size:15px;font-weight:600;">{{ card.name }}</p>
+      <p class="text-xs text-muted mt-4">締め日: {{ card.closing_day }}日 / 支払い日: {{ card.payment_day }}日</p>
+    </div>
+    <form method="post" action="{% url 'delete_credit_card' card.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--danger);">削除</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+  <p>クレジットカードが登録されていません</p>
+</div>
+{% endif %}
+<a href="{% url 'add_credit_card' %}" class="btn btn-primary" style="margin-top:16px;">+ カードを追加</a>
+{% endblock %}
