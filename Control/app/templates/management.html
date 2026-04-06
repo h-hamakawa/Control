@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}管理 - Control{% endblock %}
+{% block header_title %}管理{% endblock %}
+
+{% block content %}
+<p class="section-title">入出金</p>
+<div class="card" style="padding:0;">
+  <ul class="menu-list" style="padding:0 16px;">
+    <li>
+      <a href="{% url 'income' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--success-light);">
+            <svg fill="none" stroke="#059669" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </div>
+          収益
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'expense' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--danger-light);">
+            <svg fill="none" stroke="#dc2626" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+          </div>
+          費用
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'credit' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--primary-light);">
+            <svg fill="none" stroke="#4f46e5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          </div>
+          クレジット
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<p class="section-title">調整・設定</p>
+<div class="card" style="padding:0;">
+  <ul class="menu-list" style="padding:0 16px;">
+    <li>
+      <a href="{% url 'reset_possession' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--warning-light);">
+            <svg fill="none" stroke="#d97706" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </div>
+          所持金再設定
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'debt_setting' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--danger-light);">
+            <svg fill="none" stroke="#dc2626" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          負債設定
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'salary_setting' %}" class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-item-icon" style="background:var(--success-light);">
+            <svg fill="none" stroke="#059669" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          </div>
+          給料設定
+        </div>
+        <div class="menu-item-arrow"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></div>
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
