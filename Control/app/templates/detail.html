@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}詳細 - Control{% endblock %}
+{% block header %}
+<div class="app-header">
+  <a href="{% url 'home' %}" class="header-back">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    詳細グラフ
+  </a>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<p class="section-title">所持金の推移（30日）</p>
+<div class="card">
+  <div class="chart-container">
+    <canvas id="possessionChart"></canvas>
+  </div>
+</div>
+
+<p class="section-title">日別 収益・費用（30日）</p>
+<div class="card">
+  <div class="chart-container">
+    <canvas id="dailyChart"></canvas>
+  </div>
+</div>
+
+<p class="section-title">月別 収益・費用</p>
+<div class="card">
+  <div class="chart-container">
+    <canvas id="monthlyChart"></canvas>
+  </div>
+</div>
+
+<p class="section-title">カテゴリ別 費用内訳（30日）</p>
+<div class="card">
+  <div class="chart-container" style="height:260px;">
+    <canvas id="categoryChart"></canvas>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const CHART_COLORS = ['#4f46e5','#7c3aed','#2563eb','#0891b2','#059669','#d97706','#dc2626','#db2777','#9ca3af','#374151'];
+
+const possDates = {{ pos_dates|safe }};
+const possValues = {{ pos_values|safe }};
+const dates = {{ chart_dates|safe }};
+const incomeData = {{ chart_income|safe }};
+const expenseData = {{ chart_expense|safe }};
+const months = {{ months|safe }};
+const monthlyIncome = {{ monthly_income|safe }};
+const monthlyExpense = {{ monthly_expense|safe }};
+const catLabels = {{ cat_labels|safe }};
+const catData = {{ cat_data|safe }};
+
+const commonOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: { grid: { display: false }, ticks: { font: { size: 10 }, maxTicksLimit: 7 } },
+    y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 10 }, callback: v => '¥' + v.toLocaleString() } }
+  }
+};
+
+new Chart(document.getElementById('possessionChart'), {
+  type: 'line',
+  data: {
+    labels: possDates,
+    datasets: [{
+      data: possValues,
+      borderColor: '#4f46e5',
+      backgroundColor: 'rgba(79,70,229,0.08)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 3,
+      pointBackgroundColor: '#4f46e5',
+    }]
+  },
+  options: { ...commonOptions }
+});
+
+new Chart(document.getElementById('dailyChart'), {
+  type: 'bar',
+  data: {
+    labels: dates,
+    datasets: [
+      { label: '収益', data: incomeData, backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 4 },
+      { label: '費用', data: expenseData, backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 4 },
+    ]
+  },
+  options: {
+    ...commonOptions,
+    plugins: { legend: { display: true, position: 'top', labels: { font: { size: 11 }, boxWidth: 12 } } }
+  }
+});
+
+new Chart(document.getElementById('monthlyChart'), {
+  type: 'bar',
+  data: {
+    labels: months,
+    datasets: [
+      { label: '収益', data: monthlyIncome, backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 4 },
+      { label: '費用', data: monthlyExpense, backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 4 },
+    ]
+  },
+  options: {
+    ...commonOptions,
+    plugins: { legend: { display: true, position: 'top', labels: { font: { size: 11 }, boxWidth: 12 } } }
+  }
+});
+
+if (catData.length > 0) {
+  new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+      labels: catLabels,
+      datasets: [{ data: catData, backgroundColor: CHART_COLORS, borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12, padding: 10 } },
+        tooltip: { callbacks: { label: ctx => ` ¥${ctx.parsed.toLocaleString()}` } }
+      }
+    }
+  });
+} else {
+  document.getElementById('categoryChart').parentElement.innerHTML = '<p class="text-sm text-muted text-center" style="padding:20px;">データがありません</p>';
+}
+</script>
+{% endblock %}
