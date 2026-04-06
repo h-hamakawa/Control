@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}負債設定 - Control{% endblock %}
+{% block header %}
+<div class="app-header">
+  <a href="{% url 'management' %}" class="header-back">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    負債設定
+  </a>
+</div>
+{% endblock %}
+
+{% block content %}
+{% if card_debts %}
+<p class="section-title">クレジット負債を確定する</p>
+<div class="card">
+  {% for item in card_debts %}
+  <div class="summary-row">
+    <span class="summary-label">{{ item.card.name }}</span>
+    <span class="summary-value text-danger">¥{{ item.amount|floatformat:0 }}</span>
+  </div>
+  {% endfor %}
+</div>
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="settle_credit">
+    <div class="form-group">
+      <label class="form-label">カード</label>
+      {{ form.credit_card }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">確定金額（請求額）</label>
+      {{ form.confirmed_amount }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">説明</label>
+      {{ form.description }}
+    </div>
+    <button type="submit" class="btn btn-primary">クレジット負債を確定</button>
+  </form>
+</div>
+{% endif %}
+
+<p class="section-title">負債を手動追加</p>
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="add_manual_debt">
+    <div class="form-group">
+      <label class="form-label">金額</label>
+      {{ manual_form.amount }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">内容</label>
+      {{ manual_form.description }}
+    </div>
+    <div class="form-group">
+      <label class="form-label">期間</label>
+      {{ manual_form.period }}
+    </div>
+    <button type="submit" class="btn btn-outline">負債を追加</button>
+  </form>
+</div>
+
+{% if current_debts %}
+<p class="section-title">現在の負債</p>
+<div class="card">
+  {% for debt in current_debts %}
+  <div class="debt-item">
+    <span class="debt-description">{{ debt.description }}</span>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="debt-amount">¥{{ debt.amount|floatformat:0 }}</span>
+      <form method="post" action="{% url 'delete_debt' debt.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-ghost btn-sm" style="padding:4px 8px;width:auto;color:var(--danger);">削除</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if next_debts %}
+<p class="section-title">予定負債</p>
+<div class="card">
+  {% for debt in next_debts %}
+  <div class="debt-item">
+    <span class="debt-description">{{ debt.description }}</span>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="debt-amount">¥{{ debt.amount|floatformat:0 }}</span>
+      <form method="post" action="{% url 'delete_debt' debt.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-ghost btn-sm" style="padding:4px 8px;width:auto;color:var(--danger);">削除</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
