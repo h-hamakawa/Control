@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}所持金再設定 - Control{% endblock %}
+{% block header %}
+<div class="app-header">
+  <a href="{% url 'management' %}" class="header-back">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    所持金再設定
+  </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="background:var(--warning-light);border-color:var(--warning);margin-bottom:20px;">
+  <p class="text-sm" style="color:#92400e;">現在の所持金: <strong>¥{{ current_possession|floatformat:0 }}</strong></p>
+  <p class="text-xs text-muted mt-4">実際の所持金を入力すると、差分が現金過不足として履歴に記録されます。</p>
+</div>
+<form method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <label class="form-label">実際の所持金</label>
+    {{ form.actual_amount }}
+    {% if form.actual_amount.errors %}<p class="text-sm text-danger mt-4">{{ form.actual_amount.errors.0 }}</p>{% endif %}
+  </div>
+  <div class="form-group">
+    <label class="form-label">備考</label>
+    {{ form.note }}
+  </div>
+  <button type="submit" class="btn btn-primary">再設定する</button>
+</form>
+{% endblock %}
