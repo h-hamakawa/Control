@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}カード追加 - Control{% endblock %}
+{% block header %}
+<div class="app-header">
+  <a href="{% url 'credit_card_settings' %}" class="header-back">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    カードを追加
+  </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <label class="form-label">カード名</label>
+    {{ form.name }}
+  </div>
+  <div class="form-group">
+    <label class="form-label">締め日</label>
+    {{ form.closing_day }}
+  </div>
+  <div class="form-group">
+    <label class="form-label">支払い日</label>
+    {{ form.payment_day }}
+  </div>
+  <button type="submit" class="btn btn-primary">追加する</button>
+</form>
+{% endblock %}
