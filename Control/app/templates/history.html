@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}履歴 - Control{% endblock %}
+{% block header_title %}履歴{% endblock %}
+
+{% block content %}
+{% if transactions %}
+<div class="card" style="padding:0 16px;">
+  {% for t in transactions %}
+  <div class="history-item">
+    <div class="history-icon {{ t.transaction_type }}">
+      {% if t.transaction_type == 'income' %}💰
+      {% elif t.transaction_type == 'expense' %}💸
+      {% elif t.transaction_type == 'credit' %}💳
+      {% elif t.transaction_type == 'salary' %}🏦
+      {% else %}🔄
+      {% endif %}
+    </div>
+    <div class="history-body">
+      <div class="history-title">
+        {% if t.category %}{{ t.category.name }}{% else %}{{ t.get_transaction_type_display }}{% endif %}
+        {% if t.note %}<span class="text-muted text-xs"> · {{ t.note }}</span>{% endif %}
+      </div>
+      <div class="history-sub">
+        {{ t.transaction_date|date:"Y/m/d" }} &nbsp;·&nbsp;
+        <span class="tag tag-{{ t.transaction_type }}">{{ t.get_transaction_type_display }}</span>
+      </div>
+      <div class="history-sub mt-4">取引後所持金: ¥{{ t.possession_after|floatformat:0 }}</div>
+    </div>
+    <div class="history-amount {{ t.transaction_type }}">
+      {% if t.transaction_type in 'income,salary' %}+{% else %}-{% endif %}¥{{ t.amount|floatformat:0 }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+  </svg>
+  <p>履歴がありません</p>
+</div>
+{% endif %}
+{% endblock %}
